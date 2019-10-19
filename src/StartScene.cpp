@@ -30,6 +30,10 @@ void StartScene::draw()
 
 void StartScene::update()
 {
+	if (m_isGravityEnabled)
+	{
+		m_move();
+	}
 	if (m_displayUI)
 	{
 		m_updateUI();
@@ -281,11 +285,49 @@ void StartScene::m_updateUI()
 	}
 
 	/*************************************************************************************************/
+	
 	if (ImGui::Button("Toggle Gravity"))
+	{
+		m_isGravityEnabled = (m_isGravityEnabled) ? false : true;
+
+	}
+	ImGui::SameLine();
+
+	if (ImGui::Button("Reset All"))
+	{
+		m_isGravityEnabled = false;
+		m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+		m_gravity = 9.8f;
+		m_PPM = 5.0f;
+		m_Atime = 0.0166667f;
+		m_angle = 45.0f;
+		m_velocity = 100.0f;
+		m_velocityX = 0.0f;
+		m_velocityY = 0.0f;
+	}
+
+	ImGui::PushItemWidth(80);
+
+	if (ImGui::SliderFloat("Gravity", &m_gravity, 0.1f, 30.0f, "%.1f"))
 	{
 
 	}
 	
+	if (ImGui::SliderFloat("Pixels Per Meter", &m_PPM, 1.0f, 30.0f, "%.1f"))
+	{
+		
+	}
+	
+	if (ImGui::SliderFloat("Kicking Angle", &m_angle, 0.0f, 90.0f, "%.1f"))
+	{
+
+	}
+
+	if (ImGui::SliderFloat("Velocity", &m_velocity, 0.0f, 200.0f, "%.1f"))
+	{
+
+	}
+
 	/*
 	if (ImGui::Button("Respawn Ships"))
 	{
@@ -488,5 +530,28 @@ void StartScene::m_updateUI()
 	*/
 	// Main Window End
 	ImGui::End();
+}
+
+void StartScene::m_move()
+{
+	// Pf = Pi + ViT + 1/2 AT^2
+
+	// Pfx = Pix + Vixcos(theta)T + 1/2AxT^2
+	// Pfy = Piy + Viysin(theta)T + 1/2AyT^2
+
+	// Velocity Components
+	m_velocityX = (m_velocity * m_PPM) * cos(m_angle * Deg2Rad);
+	m_velocityY = (m_velocity * m_PPM) * -sin(m_angle * Deg2Rad);
+
+	m_acceleration = glm::vec2(0.0f, m_gravity) * m_PPM;
+
+	// Physics Equation
+	m_finalPosition = m_pShip->getPosition() + 
+		(glm::vec2(m_velocityX, m_velocityY) * m_time) + 
+		((m_acceleration * 0.5f) * (m_Atime * m_Atime));
+
+	m_Atime += m_time;
+	m_pShip->setPosition(m_finalPosition);
+
 }
 

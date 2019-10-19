@@ -97,7 +97,7 @@ void Game::start()
 {
 	m_currentSceneState = SceneState::NO_SCENE;
 
-	changeSceneState(SceneState::PLAY_SCENE);
+	changeSceneState(SceneState::START_SCENE);
 }
 
 SDL_Renderer * Game::getRenderer()
