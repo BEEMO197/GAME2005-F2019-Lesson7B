@@ -18,6 +18,8 @@ StartScene::~StartScene()
 void StartScene::draw()
 {
 	m_pShip->draw();
+	m_Wookie->draw();
+	m_Stormtroopers->draw();
 
 	// ImGui Rendering section - DO NOT MOVE OR DELETE
 	if (m_displayUI)
@@ -32,7 +34,9 @@ void StartScene::update()
 {
 	if (m_isGravityEnabled)
 	{
-		m_move();
+		if(m_pShip->getPosition().y <= 300)
+			m_move();
+
 	}
 	if (m_displayUI)
 	{
@@ -157,8 +161,17 @@ void StartScene::start()
 	addChild(m_pInstructionsLabel)*/
 
 	m_pShip = new Ship();
-	m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+	m_pShip->setPosition(glm::vec2(200.0f, 300.0f));
 	addChild(m_pShip);
+
+	m_Wookie = new Mine();
+	m_Wookie->setPosition(glm::vec2(200.0f, 300.0f));
+	addChild(m_Wookie);
+
+	m_Stormtroopers = new Target();
+	m_Stormtroopers->setPosition(glm::vec2(700.0f, 300.0f));
+	addChild(m_Stormtroopers);
+
 }
 
 void StartScene::m_ImGuiKeyMap()
@@ -280,7 +293,7 @@ void StartScene::m_updateUI()
 		ImGui::Begin("About Physics...", &m_displayAbout, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Separator();
 		ImGui::Text("Authors: ");
-		ImGui::Text("Matthew Pereira Lucas Coates ");
+		ImGui::Text("Matthew Pereira Lucas Coates");
 		ImGui::End();
 	}
 
@@ -296,14 +309,15 @@ void StartScene::m_updateUI()
 	if (ImGui::Button("Reset All"))
 	{
 		m_isGravityEnabled = false;
-		m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+		m_pShip->setPosition(glm::vec2(200.0f, 300.0f));
 		m_gravity = 9.8f;
-		m_PPM = 5.0f;
+		m_PPM = 10.0f;
 		m_Atime = 0.0166667f;
-		m_angle = 45.0f;
+		m_angle = 14.69;
 		m_velocity = 100.0f;
 		m_velocityX = 0.0f;
 		m_velocityY = 0.0f;
+		m_windForce = 0.0f;
 	}
 
 	ImGui::PushItemWidth(80);
@@ -328,6 +342,11 @@ void StartScene::m_updateUI()
 
 	}
 
+	if (ImGui::SliderFloat("WindForce", &m_windForce, -10.0f, 10.0f, "%.1f"))
+	{
+
+	}
+
 	/*
 	if (ImGui::Button("Respawn Ships"))
 	{
@@ -344,7 +363,7 @@ void StartScene::m_updateUI()
 	}
 
 	ImGui::SameLine();
-
+	 
 	if (ImGui::Button("Respawn Mines"))
 	{
 		m_respawnMines();
@@ -543,7 +562,7 @@ void StartScene::m_move()
 	m_velocityX = (m_velocity * m_PPM) * cos(m_angle * Deg2Rad);
 	m_velocityY = (m_velocity * m_PPM) * -sin(m_angle * Deg2Rad);
 
-	m_acceleration = glm::vec2(0.0f, m_gravity) * m_PPM;
+	m_acceleration = glm::vec2(m_windForce * m_mass, m_gravity) * m_PPM;
 
 	// Physics Equation
 	m_finalPosition = m_pShip->getPosition() + 

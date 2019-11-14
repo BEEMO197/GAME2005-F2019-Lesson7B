@@ -3,7 +3,7 @@
 
 Target::Target()
 {
-	TheTextureManager::Instance()->load("../Assets/textures/Circle.png",
+	TheTextureManager::Instance()->load("../Assets/textures/Stormtroopers.png",
 		"circle", TheGame::Instance()->getRenderer());
 
 	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("circle");

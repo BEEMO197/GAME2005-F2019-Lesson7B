@@ -4,7 +4,7 @@
 Mine::Mine() :
 	m_currentTile(NULL)
 {
-	TheTextureManager::Instance()->load("../Assets/textures/mine.png",
+	TheTextureManager::Instance()->load("../Assets/textures/Wookie.png",
 		"mine", TheGame::Instance()->getRenderer());
 
 	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("mine");
